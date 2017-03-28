@@ -24,7 +24,7 @@ encrypt_form = """
       </form>
       
       """
-
+back = "<p><a href='/'><input type='submit' value='Back'/></a></p>"
 class MainPage(webapp2.RequestHandler):
     def get(self):
       content = page_header + encrypt_form + page_footer
@@ -38,7 +38,7 @@ class EncryptedMessage(webapp2.RequestHandler):
       caesar = self.request.get('caesar')
       message = self.request.get('message')
       encrypted_message = encrypt(message,caesar)
-      content = page_header + encrypted_message + page_footer
+      content = page_header + encrypted_message + back + page_footer
       self.response.write(content)
     
 app = webapp2.WSGIApplication([
