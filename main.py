@@ -1,5 +1,6 @@
 import webapp2
 from caesar import encrypt
+import cgi
 
 page_header = """
 <!DOCTYPE html>
@@ -38,6 +39,7 @@ class EncryptedMessage(webapp2.RequestHandler):
       caesar = self.request.get('caesar')
       message = self.request.get('message')
       encrypted_message = encrypt(message,caesar)
+      encrypted_message = cgi.escape(encrypted_message, quote=True)
       content = page_header + encrypted_message + back + page_footer
       self.response.write(content)
     
