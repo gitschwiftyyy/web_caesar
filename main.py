@@ -10,6 +10,11 @@ page_header = """
 </head>
 <body>
     <h1>Web Caesar</h1>
+  <style>
+    span {
+      color:red;
+    }
+    </style>
 """
 
 page_footer = """
@@ -19,7 +24,7 @@ page_footer = """
 encrypt_form = """
       <form action='/' method='post'>
       <label>
-      Rotate by <input type='text' name='caesar' value='%(caesar)s'/><label><br>
+      Rotate by <input type='text' name='caesar' value='%(caesar)s'/><label>{0}<br>
       <br>Message to encrypt: <br><textarea rows='4' cols='50' name='message'>%(encrypted_message)s</textarea><br>
       <input type='submit' value='Encrypt'/><br>
       </form>
@@ -27,17 +32,21 @@ encrypt_form = """
       """
 back = "<p><a href='/'><input type='submit' value='Back'/></a></p>"
 class MainPage(webapp2.RequestHandler):
-    def get(self, encrypted_message = "", caesar = ""):
-      content = page_header + encrypt_form % {'encrypted_message':encrypted_message, 'caesar':caesar} + page_footer
+    def get(self, encrypted_message = "", caesar = "", error = ""):
+      content = page_header + encrypt_form.format(error) % {'encrypted_message':encrypted_message, 'caesar':caesar} + page_footer
       self.response.write(content)
     
-    def post(self):
+    def post(self, error = ""):
       caesar = self.request.get('caesar')
-      caesar = int(caesar)
       message = self.request.get('message')
-      encrypted_message = encrypt(message,caesar)
-      encrypted_message = cgi.escape(encrypted_message, quote=True)
-      content = page_header + encrypt_form % {'encrypted_message':encrypted_message, 'caesar':caesar} + page_footer
+      if caesar.isdigit():
+        caesar = int(caesar)
+        encrypted_message = encrypt(message,caesar)
+        encrypted_message = cgi.escape(encrypted_message, quote=True)
+      else:
+        encrypted_message = message
+        error = "<strong><span>   *Invalid Cypher*</span></strong>"
+      content = page_header + encrypt_form.format(error) % {'encrypted_message':encrypted_message, 'caesar':caesar} + page_footer
       self.response.write(content)
     
 app = webapp2.WSGIApplication([
